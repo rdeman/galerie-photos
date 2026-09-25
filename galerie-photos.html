@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes Albums Photo</title>
+  <style>
+    :root {
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #212529;
+      --subtext-color: #6c757d;
+      --radius: 12px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 2rem 1rem;
+      line-height: 1.5;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--subtext-color);
+      font-size: 1.1rem;
+    }
+
+    .gallery-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .album-card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .album-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .thumbnail-wrapper {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background-color: #e9ecef;
+    }
+
+    .thumbnail-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .album-card:hover .thumbnail-wrapper img {
+      transform: scale(1.03);
+    }
+
+    .album-info {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .album-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .album-details {
+      font-size: 0.9rem;
+      color: var(--subtext-color);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Souvenirs souvenirs ...</h1>
+    <h2>60 ans</h2>
+  </header>
+
+  <main class="gallery-container" id="gallery"></main>
+
+  <script>
+    // Configuration de tes albums Google Photos
+    const albums = [
+      {
+        title: "Copains du Gers",
+        coverUrl: "https://lh3.googleusercontent.com/pw/AP1GczPrC53-iXfUYdJSfMYRDqtODHEW5u4dtAVL_vy0DJzTCgYHPvB5xJU0z4tpxvBm2I5EFyWctwQA89pLJjQW8womwVaUydCwSRGyEQm4reptoj7X2ARtiUsctY9tNjPWDd4Si6eIho01a2sJndNMUN4P=w1415-h1061-s-no-gm?authuser=0?w=600&q=80",
+        albumUrl: "https://photos.google.com/u/0/share/AF1QipN4RW1miE-IuQ2VIrXl1ZJEQAoe00LW3Qp-QSHS8OxxP9JbtITWswMpjw_xoVEBGQ?hl=fr&key=Um9LVVVUcVRyTTVkZnIxVWhiUERVWDFsbjBOYlVn",
+        count: 19
+      },
+      {
+        title: "Copains de l'INSA",
+        coverUrl: "https://lh3.googleusercontent.com/pw/AP1GczMXOnOGX4mbi-qHrVDn43YyBgupSmD7EegwR5MRM6yVlLvvsGyf8DnRASJL1ocYM_Pi69wK-pbutzSnoQOtbQlLLuiiuvPeQu3SqIRPcJUSLOZ9cY3LGxKHE0JPxJj8x-KmHfumCBdw6iNPRHUealMh=w1415-h1061-s-no-gm?authuser=0?w=600&q=80",
+        albumUrl: "https://photos.google.com/u/0/share/AF1QipM32em9URzDVeptvr0sSCCZZxzppEnyIMWzbVtiV8MK7OgGZmtpVKr7i9cIUzRQrw?key=TVV1TmtOWWMzMXZZUmtmTUNyVVV0cmlkclRBbzFBhttps://photos.google.com/u/0/share/AF1QipM32em9URzDVeptvr0sSCCZZxzppEnyIMWzbVtiV8MK7OgGZmtpVKr7i9cIUzRQrw?key=TVV1TmtOWWMzMXZZUmtmTUNyVVV0cmlkclRBbzFB",
+        count: 21
+      },
+      {
+        title: "Famille et plus",
+        coverUrl: "https://lh3.googleusercontent.com/pw/AP1GczP10ZxTMapMAKjKogosFq7VoAyQKuMlMhIzynF5pjfY6RRGpAqE8aYWiR4G1CdgoHslWOFPd9tvx3qMw2OwNqEwctX1LMzp4QBbNRr3Qz3K-bZThip4xUV3iN0UrNRxyat0VreR938P5VDo8jBYwn0=w1415-h1061-s-no-gm?authuser=0?w=600&q=80",
+        albumUrl: "https://photos.google.com/u/0/share/AF1QipMnfxBrr-5he-X6Lr_VcNDRtZ2iT9zA9Km4E962-JaBv04tFFnpInbQk8_W2c9mNg?hl=fr&key=UmtYYUJUSVdCYjE4TGpwdjRXRzFpNXR2b2RzTmRB",
+        count: 00
+      },
+      {
+        title: "Tripotes",
+        coverUrl: "https://lh3.googleusercontent.com/pw/AP1GczP-gIkmSb7fSyHhowNhOezBITr5HbpeUFKq3cYZLam-Mp8vliTjymv1Ek6zFohamZuHlqXnz0dNdDEZ1M1kObjK7wsuA2a2_YBjCVzpWJIR0ZUx3QlkJ13bixeQUMv9CXnu5fSmwm19iMynQbDfkxpW=w1415-h1061-s-no-gm?authuser=0?w=600&q=80",
+        albumUrl: "https://photos.google.com/u/0/share/AF1QipNaeJ60AqcBjXrOBeYW5166uJn-VfQEpxoxSiQl_PTOrAXqx9ls6np-bDaNTR-McA?key=OEtNdkg3azV5cmhGTWRDOFFWOEV3R0xucWctV1F3&hl=fr",
+        count: 00
+      },
+      {
+        title: "TUC Tri",
+        coverUrl: "https://lh3.googleusercontent.com/pw/AP1GczPYXMl-isLHrmsoMv_dOe8Qoh58_pUGpNx_J_MQElP5FFFyDiT74u__r4oTe-2IqGeighgIJyA-qx1VMcuuMosfFUK5Ljk4vwu7S5ogNgy1XST79A4Sr15p1SAl3a77ARPfcY0UvSThogQu8nYVtX3u=w1415-h1061-s-no-gm?authuser=0?w=600&q=80",
+        albumUrl: "https://photos.google.com/u/0/share/AF1QipPL_8DAvmmgwazGGTSndoZ-gAZ-ThbrQYnjmh2CU88sC-8tu1zNbgyTphAbdzK7TA?hl=fr&key=SVRsTnY3dW1iSkdONUVxVWdnRGg4RUZsTzNmUFJ3",
+        count: 00
+      },
+      {
+        title: "Simrun",
+        coverUrl: "https://lh3.googleusercontent.com/pw/AP1GczM4mtAzNrgBbXACfUmU0Acgatcyiw5fMGvredRiBl8yCmE7-KmLEjwU-WJbksx7CUTdhBLRFmXCxwYFEp55NN5ZKWRDTIZ0e-TZ4tnauUy8B_faq5s3uUqqs--ir-fKDRSsUb7YiYcj4J6fsb5BRx27=w1415-h1061-s-no-gm?authuser=0?w=600&q=80",
+        albumUrl: "https://photos.google.com/u/0/share/AF1QipOCIjMBS1D1sYxuyMLy0yiJbsb1hFxONr2hdaS0ZvUaluFFBwD3HAe5ZFaqG1gQcQ?hl=fr&key=dUVzeGs2RklJWlBtaU1PeXZCbTYyVkNrVHZ6Y2Fn",
+        count: 00
+      },
+      {
+        title: "Taptapinoni",
+        coverUrl: "https://lh3.googleusercontent.com/pw/AP1GczP-Bt4SXS5WCIJkPksw3FYyOzyX6d_uZ1sQyev5PaPtsfYUtYVL--6p2AFwyLFj9gS5h2jMkRKDsIQQ89VJlZ6bTrj9oHLJLWeyQgbCRGpU393dgFACTToNNhXmLYrUWRNJ_ZPczeINwSF7Mf0bcgr2=w1592-h1061-s-no-gm?authuser=0?w=600&q=80",
+        albumUrl: "https://photos.google.com/u/0/share/AF1QipOCIjMBS1D1sYxuyMLy0yiJbsb1hFxONr2hdaS0ZvUaluFFBwD3HAe5ZFaqG1gQcQ?hl=fr&key=dUVzeGs2RklJWlBtaU1PeXZCbTYyVkNrVHZ6Y2Fn",
+        count: 00
+      },
+      {
+        title: "Traversée des Alpes",
+        coverUrl: "https://lh3.googleusercontent.com/pw/AP1GczMv82CqXHQg5LKzyEfQmEsoriRQZIFCh_v2Y3iAUekBPmQTCegSVxScqh0pL2tCebrmd7pLRPUNWZq40WlzLpIZxuDy0MDJuYDVT_EzB23lEoGAUkGya4cM2E5Qo2o2eXSI_SUh0XrEzCi6gTWyXw4=w796-h1061-s-no-gm?authuser=0?w=600&q=80",
+        albumUrl: "https://photos.google.com/u/0/share/AF1QipOIGKOVrJ-JU4Ww3vie8kUB98y7Kk2LjfS2K1WhIKTxF9YxvqDFmrWqBS68cB2AQg?hl=fr&key=TVdkSVBEWFRPT2J1YlFsaGNXd1MySkFxUXZzYkF3",
+        count: 00
+      },
+      {
+        title: "Peyreval",
+        coverUrl: "https://lh3.googleusercontent.com/pw/AP1GczPu_Y9AoQzDLR5myc19SGYi5P7SiCZVCU41f49DMztwwDrDPzVHIxd2xo905V77wdHho32QtKROJkqgQNVvsuxxYnW9S0FHYYbLq0L-b6TpMASopPCTgrJvxZoT9cKug16isOP_LHEAvRD0lZRyDlI=w1415-h1061-s-no-gm?authuser=0?w=600&q=80",
+        albumUrl: "https://photos.google.com/u/0/share/AF1QipNjKcgfx_OfWrwtZTRQd2_QvIvT2HaZFFlUgpP8-JQdnpotlzVcMwDVOSyCAXTshQ?hl=fr&key=Skp6T2dtYlVjTkpHMlJNYXprNjYzbFh1QnRvTmdB",
+        count: 00
+      },
+      {
+        title: "Divers Rod",
+        coverUrl: "https://lh3.googleusercontent.com/pw/AP1GczP8_10WyK-adyioo6IAmxKhjsQMiWP9bkyk5ZDSaATNSG5BnTDgjGTLkVOs4_NSPgSZZEZkPAvTSHzZEzhNJbCrH8HRgNl0OXhu4-z1n80goPcfQt5y3wZSEt6ghe2XS1AcFrxIw9J3YycwqGfBzLLm=w1597-h1061-s-no-gm?authuser=0?w=600&q=80",
+        albumUrl: "https://photos.google.com/u/0/share/AF1QipNBwGHUqlo7BZz4vNJ9QPpzDY3uj2vlAZKiF9JftgHMFbNO5LJty7BUissFL-Lccg?hl=fr&key=VG5ycHdmcjgydENNWGVrb3BlZUxRck9OS3FRUG5B",
+        count: 00
+      },
+      {
+        title: "Boulot",
+        coverUrl: "https://lh3.googleusercontent.com/pw/AP1GczM5zZHd8oYScL3nMtJKqKfRS0_yYWUj45HRKbmp7UbqIVA29mHdpyIPmFf88yrjXYj_usYrjujdWKMVWn6F260-Dj4NBMWtc7BI_xa3R8dxH__EqfXwFtBgLWM3_mfVPLfoAkzWz6sxHuMIPf0s2j1S=w1415-h1061-s-no-gm?authuser=0?w=600&q=80",
+        albumUrl: "https://photos.google.com/u/0/share/AF1QipNvqBTfB7xq-gmfmrxDg6Er-1ZmfQnuRwcFXksKE_IC4JOE9ZCoDAlnlCcvWdfMZA?hl=fr&key=NS1vVG0wWW96c1Zxdl8td3JaTXVIdFVYWHY0WWdB",
+        count: 00
+      }
+    ];
+
+    // Génération automatique du HTML
+    const galleryContainer = document.getElementById('gallery');
+
+    albums.forEach(album => {
+      const card = document.createElement('a');
+      card.className = 'album-card';
+      card.href = album.albumUrl;
+//      card.target = '_blank';
+      card.rel = 'noopener noreferrer';
+
+      card.innerHTML = `
+        <div class="thumbnail-wrapper">
+          <img src="${album.coverUrl}" alt="${album.title}" loading="lazy">
+        </div>
+        <div class="album-info">
+          <h2 class="album-title">${album.title}</h2>
+          <span class="album-details">${album.count ? album.count + ' photos' : ''}</span>
+        </div>
+      `;
+
+      galleryContainer.appendChild(card);
+    });
+  </script>
+</body>
+</html>
